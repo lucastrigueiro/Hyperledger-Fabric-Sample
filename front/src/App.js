@@ -1,11 +1,36 @@
 import React from 'react';
 import 'antd/dist/antd.css';
-import { Layout, Menu, Breadcrumb } from 'antd';
+import { Layout, Menu } from 'antd';
 import './App.scss';
 import GetAllCars from './pages/GetAllCars';
 import GetCar from './pages/GetCar';
+import Manage from './pages/Manage';
+import AddNewCar from './pages/AddNewCar';
 
 const { Header, Content, Footer } = Layout;
+
+const tabList = [
+  {
+    title: 'Get all cars',
+    display: <GetAllCars />,
+  },
+  {
+    title: 'Query car',
+    display: <GetCar />,
+  },
+  {
+    title: 'Add New Car',
+    display: <AddNewCar />,
+  },
+  {
+    title: 'Tab 4',
+    display: 'tab 4',
+  },
+  {
+    title: 'Manage',
+    display: <Manage />,
+  },
+]
 
 class App extends React.Component {
   constructor(props) {
@@ -21,18 +46,7 @@ class App extends React.Component {
   };
 
   getContent = () => {
-    switch (this.state.activeTab) {
-      case '1':
-        return <GetAllCars />
-      case '2':
-        return <GetCar />
-      case '3':
-        return '33333'
-      case '4':
-        return '44444'
-      default:
-        console.log('Sorry');
-    }
+    return tabList[this.state.activeTab].display;
   };
 
   render () {
@@ -46,10 +60,9 @@ class App extends React.Component {
             defaultSelectedKeys={[this.state.activeTab]}
             style={{ lineHeight: '64px' }}
           >
-            <Menu.Item key="1" onClick={() => this.changeActiveTab('1')}>Get all cars</Menu.Item>
-            <Menu.Item key="2" onClick={() => this.changeActiveTab('2')}>nav 2</Menu.Item>
-            <Menu.Item key="3" onClick={() => this.changeActiveTab('3')}>nav 3</Menu.Item>
-            <Menu.Item key="4" onClick={() => this.changeActiveTab('4')}>nav 4</Menu.Item>
+            {tabList.map((v, i) => (
+              <Menu.Item key={`${i}`} onClick={() => this.changeActiveTab(`${i}`)}>{v.title}</Menu.Item>
+            ))}
           </Menu>
         </Header>
         <Content style={{ padding: '50px 50px 0 50px', marginTop: 64 }}>
