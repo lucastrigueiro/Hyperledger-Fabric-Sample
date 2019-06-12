@@ -1,5 +1,7 @@
 # Hyperledger-Fabric-Sample
 
+## Configuration
+
 ### Prerequisites
 Check if you have all the prerequisites installed on the platform.
 
@@ -23,3 +25,6 @@ Open a terminal at ./front/
 $ npm install
 $ npm start
 ```
+## Usage
+
+in progress...
