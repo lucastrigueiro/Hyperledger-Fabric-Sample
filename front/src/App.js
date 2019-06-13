@@ -23,10 +23,6 @@ const tabList = [
     display: <AddNewCar />,
   },
   {
-    title: 'Tab 4',
-    display: 'tab 4',
-  },
-  {
     title: 'Manage',
     display: <Manage />,
   },
@@ -37,7 +33,7 @@ class App extends React.Component {
     super(props);
 
     this.state = {
-      activeTab: '2',
+      activeTab: '0',
     };
   }
 
