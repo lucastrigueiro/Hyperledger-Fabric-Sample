@@ -23,7 +23,7 @@ rm -rf ./hfc-key-store
 cd ./network
 
 ./stop.sh
-./teardown.sh
+# ./teardown.sh
 ./start.sh
 
 # Now launch the CLI container in order to install, instantiate chaincode

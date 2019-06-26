@@ -4,7 +4,7 @@ import { Layout, Menu } from 'antd';
 import './App.scss';
 import GetAllCars from './pages/GetAllCars';
 import GetCar from './pages/GetCar';
-import Manage from './pages/Manage';
+import RegisterUser from './pages/RegisterUser';
 import AddNewCar from './pages/AddNewCar';
 
 const { Header, Content, Footer } = Layout;
@@ -23,10 +23,10 @@ const tabList = [
     display: <AddNewCar />,
   },
   {
-    title: 'Manage',
-    display: <Manage />,
+    title: 'Register user',
+    display: <RegisterUser />,
   },
-]
+];
 
 class App extends React.Component {
   constructor(props) {

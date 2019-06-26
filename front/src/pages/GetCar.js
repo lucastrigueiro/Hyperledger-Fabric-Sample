@@ -9,6 +9,7 @@ class GetCar extends React.Component {
     super(props);
 
     this.state = {
+      loading: false,
       car: null,
       carId: '',
     };
@@ -43,11 +44,11 @@ class GetCar extends React.Component {
       console.log(error);
       message.error(Error, msgDuration);
     })
-  }
+  };
 
   handleChange = (event) => {
     this.setState({carId: event.target.value});
-  }
+  };
 
   render () {
     return (

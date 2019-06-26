@@ -14,6 +14,9 @@ const ccpJSON = fs.readFileSync(ccpPath, 'utf8');
 const ccp = JSON.parse(ccpJSON);
 
 app.get('/api/enrolladmin', async function (req, res) {
+  const admin = 'admin';
+  const enrollmentSecret = 'adminpw';
+  const org_msp = 'Org1MSP';
   try {
     // Create a new CA client for interacting with the CA.
     const caURL = ccp.certificateAuthorities['ca.example.com'].url;
@@ -25,33 +28,40 @@ app.get('/api/enrolladmin', async function (req, res) {
     console.log(`Wallet path: ${walletPath}`);
 
     // Check to see if we've already enrolled the admin user.
-    const adminExists = await wallet.exists('admin');
+    const adminExists = await wallet.exists(admin);
     if (adminExists) {
-        console.log('An identity for the admin user "admin" already exists in the wallet');
+        console.log(`An identity for the admin user "${admin}" already exists in the wallet`);
         res.status(200).json({
-          response: 'An identity for the admin user "admin" already exists in the wallet',
+          response: `An identity for the admin user "${admin}" already exists in the wallet`,
           created: false,
         });
         return;
     }
 
     // Enroll the admin user, and import the new identity into the wallet.
-    const enrollment = await ca.enroll({ enrollmentID: 'admin', enrollmentSecret: 'adminpw' });
-    const identity = X509WalletMixin.createIdentity('Org1MSP', enrollment.certificate, enrollment.key.toBytes());
+    const enrollment = await ca.enroll({ enrollmentID: admin, enrollmentSecret: enrollmentSecret });
+    const identity = X509WalletMixin.createIdentity(org_msp, enrollment.certificate, enrollment.key.toBytes());
     wallet.import('admin', identity);
     
-    console.log('Successfully enrolled admin user "admin" and imported it into the wallet');
+    console.log(`Successfully enrolled admin user "${admin}" and imported it into the wallet`);
     res.status(200).json({ 
-      response: 'Successfully enrolled admin user "admin" and imported it into the wallet',
+      response: `Successfully enrolled admin user "${admin}" and imported it into the wallet`,
       created: true,
     });
   } catch (error) {
-    console.error(`Failed to enroll admin user "admin": ${error}`);
+    console.error(`Failed to enroll admin user "${admin}": ${error}`);
     res.status(500).json({ error: error });
   }
 });
 
-app.get('/api/registeruser', async function (req, res) {
+
+
+app.post('/api/registeruser', async function (req, res) {
+  const admin = 'admin';
+  const user = req.body.user;
+  const org_msp = 'Org1MSP';
+  const role = 'client';
+
   try {
 
     // Create a new file system based wallet for managing identities.
@@ -60,23 +70,23 @@ app.get('/api/registeruser', async function (req, res) {
     console.log(`Wallet path: ${walletPath}`);
 
     // Check to see if we've already enrolled the user.
-    const userExists = await wallet.exists('user1');
+    const userExists = await wallet.exists(user);
     if (userExists) {
-        console.log('An identity for the user "user1" already exists in the wallet');
+        console.log(`An identity for the user "${user}" already exists in the wallet`);
         res.status(200).json({
-          response: 'An identity for the user "user1" already exists in the wallet',
+          response: `An identity for the user "${user}" already exists in the wallet`,
           created: false,
         });
         return;
     }
 
     // Check to see if we've already enrolled the admin user.
-    const adminExists = await wallet.exists('admin');
+    const adminExists = await wallet.exists(admin);
     if (!adminExists) {
-        console.log('An identity for the admin user "admin" does not exist in the wallet');
+        console.log(`An identity for the admin user "${admin}" does not exist in the wallet`);
         console.log('Run the enrollAdmin.js application before retrying');
         res.status(200).json({
-          response: 'An identity for the admin user "admin" does not exist in the wallet. Run the enrollAdmin.js application before retrying',
+          response: `An identity for the admin user "${admin}" does not exist in the wallet. Run the enrollAdmin.js application before retrying`,
           created: false,
         });
         return;
@@ -84,28 +94,31 @@ app.get('/api/registeruser', async function (req, res) {
 
     // Create a new gateway for connecting to our peer node.
     const gateway = new Gateway();
-    await gateway.connect(ccp, { wallet, identity: 'admin', discovery: { enabled: false } });
+    await gateway.connect(ccp, { wallet, identity: admin, discovery: { enabled: false } });
 
     // Get the CA client object from the gateway for interacting with the CA.
     const ca = gateway.getClient().getCertificateAuthority();
     const adminIdentity = gateway.getCurrentIdentity();
 
     // Register the user, enroll the user, and import the new identity into the wallet.
-    const secret = await ca.register({ affiliation: 'org1.department1', enrollmentID: 'user1', role: 'client' }, adminIdentity);
-    const enrollment = await ca.enroll({ enrollmentID: 'user1', enrollmentSecret: secret });
-    const userIdentity = X509WalletMixin.createIdentity('Org1MSP', enrollment.certificate, enrollment.key.toBytes());
-    wallet.import('user1', userIdentity);
-    console.log('Successfully registered and enrolled admin user "user1" and imported it into the wallet');
+    const secret = await ca.register({ affiliation: 'org1.department1', enrollmentID: user, role: role }, adminIdentity);
+    const enrollment = await ca.enroll({ enrollmentID: user, enrollmentSecret: secret });
+    const userIdentity = X509WalletMixin.createIdentity(org_msp, enrollment.certificate, enrollment.key.toBytes());
+    wallet.import(user, userIdentity);
+    console.log(`Successfully registered and enrolled user "${user}" and imported it into the wallet`);
     res.status(200).json({ 
-      response: 'Successfully registered and enrolled admin user "user1" and imported it into the wallet',
+      response: `Successfully registered and enrolled user "${user}" and imported it into the wallet`,
       created: true,
     });
 
   } catch (error) {
-    console.error(`Failed to register user "user1": ${error}`);
+    console.error(`Failed to register user "${user}": ${error}`);
     res.status(500).json({ error: error });
   }
 });
+
+
+
 
 app.get('/api/queryallcars', async function (req, res) {
   try {
