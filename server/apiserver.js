@@ -99,6 +99,7 @@ app.post('/api/registeruser', async function (req, res) {
     // Get the CA client object from the gateway for interacting with the CA.
     const ca = gateway.getClient().getCertificateAuthority();
     const adminIdentity = gateway.getCurrentIdentity();
+    
 
     // Register the user, enroll the user, and import the new identity into the wallet.
     const secret = await ca.register({ affiliation: 'org1.department1', enrollmentID: user, role: role }, adminIdentity);
@@ -244,6 +245,7 @@ app.put('/api/changeowner/:car_index', async function (req, res) {
     // createCar transaction - requires 5 argument, ex: ('createCar', 'CAR12', 'Honda', 'Accord', 'Black', 'Tom')
     // changeCarOwner transaction - requires 2 args , ex: ('changeCarOwner', 'CAR10', 'Dave')
     await contract.submitTransaction('changeCarOwner', req.params.car_index, req.body.owner);
+    // await contract.submitTransaction('changeCarColor', req.params.car_index, req.body.owner);
     console.log('Transaction has been submitted');
     res.status(200).json({ response: 'Transaction has been submitted' });
     // Disconnect from the gateway.
